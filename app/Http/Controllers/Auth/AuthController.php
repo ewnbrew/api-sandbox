@@ -68,4 +68,16 @@ class AuthController extends Controller
     }
   }
 
+  public function details()
+  {
+    $user = auth()->user();
+    return (!$user) ? response()->json(['message' => 'your not logged in']) : $user;
+  }
+
+  public function logout()
+  {
+    auth()->logout();
+    return response()->json(['message' => 'Successfully logged out']);
+  }
+
 }

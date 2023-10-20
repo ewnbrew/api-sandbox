@@ -24,6 +24,7 @@ Route::group([
 ], function() {
     Route::post('/login', 'login')->name('login');
     Route::post('/register', 'register')->name('register');
+    Route::get('/details', 'details')->name('details');
     Route::post('/logout', 'logout')->name('logout');
 });
 
