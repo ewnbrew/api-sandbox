@@ -19,8 +19,8 @@ class AuthService
   public function auththenticate($credentials)
   {
     try {
-      if($token = JWTAuth::attempt($credentials)){
-        $user = auth()->user();
+      if($token = auth()->guard('api')->attempt($credentials)){
+        $user = auth()->guard('api')->user();
         return [
           'user' => $user,
           'token' => $token,
