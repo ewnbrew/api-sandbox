@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Api\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
@@ -21,25 +22,25 @@ class AuthController extends Controller
   public function login(LoginRequest $request)
   {
     try {
-      $validated = $request->validated();
-      if(!$validated){
-        return response()->json([
-          'name' => 'Abigail',
-          'state' => 'CA',
-        ], 422);
+      $credentials = $request->only(['email','password']);
+      $data = $this->authService->auththenticate($credentials);
+      if ($data['data'] === false) {
+        return ResponseFormatter::error(
+          null,
+          $data['message']
+        );
+      } else {
+        return ResponseFormatter::success(
+          $data['data'],
+          'login succesfully'
+        );
       }
-
-      $data = $this->authService->auththenticate($request->only(['email','password']));
-
-      return response()->json([
-        'status_code' => '200',
-        'data' => $data
-      ], 200);
     } catch (Exception $e) {
-      return response()->json([
-        'status_code' => '500',
-        'message' => throw new Exception($e->getMessage()),
-      ], 500);
+      return ResponseFormatter::error(
+        null,
+        $e->getMessage(),
+        500
+      );
     }
   }
 
@@ -54,7 +55,8 @@ class AuthController extends Controller
         ], 422);
       }
 
-      $data = $this->authService->register($request->only(['name','email','password']));
+      $credentials = $request->only(['name','email','password']);
+      $data = $this->authService->register($credentials);
 
       return response()->json([
         'status_code' => '200',

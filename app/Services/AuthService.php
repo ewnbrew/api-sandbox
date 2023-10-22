@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Repositories\AuthRepository;
 use Exception;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthService 
 {
@@ -19,16 +18,25 @@ class AuthService
   public function auththenticate($credentials)
   {
     try {
-      if($token = auth()->guard('api')->attempt($credentials)){
-        $user = auth()->guard('api')->user();
-        return [
-          'user' => $user,
-          'token' => $token,
-          'type' => 'bearer'
-        ];
-      } else {
-        return response()->json(['error' => 'Unauthorized'], 401);
-      }
+      $email = (string) $credentials['email'];
+      $password = (string) $credentials['password'];
+      $message = $this->authRepository->checkCredentials($email, $password);
+      
+      $token = auth()->guard('api')->attempt($credentials);
+      $user = auth()->guard('api')->user();
+
+      $data =  [
+        'user' => $user,
+        'type' => 'bearer',
+        'token' => $token,
+      ];
+      
+      $reponse = [
+        'data' => ($user || $token) ? $data : false,
+        'message' => $message
+      ];
+      
+      return $reponse;
     } catch(Exception $e) {
       return $e->getMessage();
     }
