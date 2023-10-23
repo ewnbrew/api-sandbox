@@ -8,6 +8,8 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Services\AuthService;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -19,9 +21,21 @@ class AuthController extends Controller
     $this->authService = $authService;
   }
 
-  public function login(LoginRequest $request)
+  public function login(Request $request)
   {
     try {
+      $validator = Validator::make($request->all(), [
+        'email' => 'required|email',
+        'password' => 'required',
+      ]);
+
+      if ($validator->fails()) {
+        return response()->json([
+          'message' => 'Validation failed',
+          'errors' => $validator->errors(),
+        ], 422);
+      }
+      
       $credentials = $request->only(['email','password']);
       $data = $this->authService->auththenticate($credentials);
       if ($data['data'] === false) {
