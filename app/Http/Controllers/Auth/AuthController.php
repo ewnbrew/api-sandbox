@@ -96,4 +96,12 @@ class AuthController extends Controller
     return response()->json(['message' => 'Successfully logged out']);
   }
 
+  public function dashboard(Request $request)
+  {
+    return response()->json([
+      'message' => 'halo',
+      'data' => auth()->user()
+    ]);
+  }
+
 }
