@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +14,31 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+/* auth */
+Route::group([
+    'prefix' => 'auth',
+    'controller' => AuthController::class,
+    'middleware' => ['api']
+], function() {
+    Route::post('/login', 'login')->name('login');
+    Route::post('/register', 'register')->name('register');
+    Route::middleware(['auth', '','jwt.verify'])->group(function(){
+        Route::get('/dashboard', 'dashboard')->name('dashboard');
+        Route::get('/details', 'details')->name('details');
+        Route::post('/logout', 'logout')->name('logout');
+    });    
 });
+
+/* spotify */
+Route::group([
+    'prefix' => 'spotify',
+    'middleware' => ['auth', 'jwt.verify', ''],
+    'controller' => 'spotify',
+], function() {
+    // Route::post('/')
+});
+
+
+
+
+
