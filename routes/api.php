@@ -14,16 +14,28 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
+/* auth */
 Route::group([
     'prefix' => 'auth',
     'controller' => AuthController::class,
+    'middleware' => ['api']
 ], function() {
     Route::post('/login', 'login')->name('login');
     Route::post('/register', 'register')->name('register');
-    Route::get('/details', 'details')->name('details');
-    Route::post('/logout', 'logout')->name('logout');
-    Route::get('/dashboard', 'dashboard')->middleware('jwt.verify')->name('dashboard');
+    Route::middleware(['auth', '','jwt.verify'])->group(function(){
+        Route::get('/dashboard', 'dashboard')->name('dashboard');
+        Route::get('/details', 'details')->name('details');
+        Route::post('/logout', 'logout')->name('logout');
+    });    
+});
+
+/* spotify */
+Route::group([
+    'prefix' => 'spotify',
+    'middleware' => ['auth', 'jwt.verify', ''],
+    'controller' => 'spotify',
+], function() {
+    // Route::post('/')
 });
 
 
